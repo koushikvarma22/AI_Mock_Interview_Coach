@@ -1,0 +1,32 @@
+databases:
+  - name: ai-mock-interview-db
+    databaseName: ai_mock_interview
+    user: ai_user
+    plan: free
+
+services:
+  - type: web
+    name: ai-mock-interview-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 120
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ai-mock-interview-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: HF_API_TOKEN
+        sync: false
+      - key: HF_MODEL
+        value: Qwen/Qwen2.5-7B-Instruct
+      - key: FRONTEND_URL
+        sync: false
+      - key: MAX_RESUME_SIZE_MB
+        value: 5
